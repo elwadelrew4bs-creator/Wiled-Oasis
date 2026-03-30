@@ -27,23 +27,25 @@ const TableHeader = styled.header`
   padding: 1.6rem 2.4rem;
 `;
 function CabinTable() {
+
   const {isPending , error , data:cabins} = useQuery({
     queryKey: ["cabins"],
     queryFn: getCabins,
   })
-  console.log(cabins)
   if(isPending) return <Spinner/>
   return (
+    <>
     <Table role="table">
       <TableHeader>
         <div>Cabin</div>
         <div>Capacity</div>
         <div>Price</div>
         <div>Max</div>
-        <div></div>
+        <div>Discount</div>
       </TableHeader>
       {cabins.map(cabin => <CabinRow cabin={cabin} key={cabin.id}/>)}
     </Table>
+    </>
   )
 }
 

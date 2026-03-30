@@ -16,6 +16,7 @@ import Login from "./pages/Login";
 import PageNotFound from "./pages/PageNotFound";
 import AppLayout from "./ui/AppLayout";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { Toaster } from "react-hot-toast";
 
 
 const queryClient = new QueryClient({
@@ -46,6 +47,7 @@ function App() {
           
         </Routes>
          <ReactQueryDevtools initialIsOpen={false} />
+         <Toaster position="bottom-center" gutter={12} containerStyle={{margin:"8px"}}/> 
     </QueryClientProvider>
   );
 }

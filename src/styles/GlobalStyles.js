@@ -66,6 +66,7 @@ const GlobalStyles = createGlobalStyle`
 
   /* Creating animations for dark mode */
   transition: background-color 0.3s, border 0.3s;
+  scrollbar-width: none;
 }
 
 html {
