@@ -1,6 +1,10 @@
+import { createContext, useState , useContext} from "react";
 import styled from "styled-components";
-
-const StyledMenu = styled.div`
+import React from "react";
+import { createPortal } from "react-dom";
+import { HiEllipsisVertical } from "react-icons/hi2";
+import { useOutsideClick } from "../hooks/useOutsideClick";
+const Menu = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -60,3 +64,61 @@ const StyledButton = styled.button`
     transition: all 0.3s;
   }
 `;
+const MenusContext = createContext();
+function Menus({ children }) {
+  const [openId, setOpenId] = useState("");
+  const [position, setPosition] = useState(null);
+  const close = () => setOpenId("");
+  const open = setOpenId;
+  return <MenusContext value={{ openId, close, open , position , setPosition}}>{children}</MenusContext>;
+}
+function Toggle({ id }) {
+
+  const { openId, open, close , setPosition} = useContext(MenusContext);
+
+  function handleClick(e) {
+
+    const position = e.target.closest('button').getBoundingClientRect();
+
+    setPosition({
+      x: window.innerWidth - position.x ,
+      y: position.y + position.height + 8,
+    })
+    openId === id ? close() : open(id);
+  }
+
+  return <StyledToggle onClick={handleClick}>
+    <HiEllipsisVertical/>
+  </StyledToggle>;
+}
+function List({ id , children}) {
+
+  const { openId, close , position} = useContext(MenusContext);
+  const ref = useOutsideClick(close)
+  if (openId !== id) return null;
+  return createPortal(
+    <StyledList position={position} ref={ref}>{children}</StyledList>,
+    document.body,
+  );
+}
+function Button({ children , icon , onClick }) {
+
+  const { close } = useContext(MenusContext);
+
+  function handleClick() {
+    onClick?.();
+    close();
+  }
+  return (
+    <li>
+      <StyledButton onClick={handleClick}>{icon}<span>{children}</span></StyledButton>
+    </li>
+  );
+}
+
+Menus.Menu = Menu;
+Menus.List = List;
+Menus.Button = Button;
+Menus.Toggle = Toggle;
+
+export default Menus;

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-
+import React from "react";
 import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { useCreateCabin } from "./useCreateCabin";
 import { useEditCabin } from "./useEditCabin";
 import FormRow from "../../ui/FormRow";
-function CreateCabinForm({ cabinToEdit = {} }) {
+function CreateCabinForm({ cabinToEdit = {} , onCloseModal}) {
   const { id: editId, ...editValues } = cabinToEdit;
   const isEditSession = Boolean(editId);
   const {
@@ -26,18 +26,22 @@ const { isEditing, editCabin } = useEditCabin();
   function onSubmit(data) {
     const image = typeof data.image === "string" ? data.image : data.image[0];
     isEditSession
-      ?editCabin(
-  { newCabinData: { ...data, image }, id: editId },
-  { onSuccess: () => reset() }
-)
-      : createCabin({ ...data, image } , {onSuccess: () => reset()} );
+      ? editCabin(
+          { newCabinData: { ...data, image }, id: editId },
+          { onSuccess: () => {reset() 
+            onCloseModal?.()
+          } }
+        )
+      : createCabin({ ...data, image }, { onSuccess: () => {reset() 
+        onCloseModal?.()
+      } });
   }
   function onError(errors) {
     console.log(errors);
   }
   const isWorking = isCreating || isEditing;
   return (
-    <Form onSubmit={handleSubmit(onSubmit, onError)}>
+    <Form onSubmit={handleSubmit(onSubmit, onError)} type={onCloseModal ? "modal" : "regular"}>
       <FormRow label="Cabin name" errorMessage={errors?.name?.message}>
         <Input
           type="text"
@@ -122,7 +126,7 @@ const { isEditing, editCabin } = useEditCabin();
 
       <FormRow>
         {/* type is an HTML attribute! */}
-        <Button variation="secondary" type="reset">
+        <Button variation="secondary" type="reset" onClick={()=>onCloseModal?.()}>
           Cancel
         </Button>
         <Button type="submit">
